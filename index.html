@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Cadastro de pessoas</title>
+</head>
+<body>
+<div id="content-wrapper">
+    <main id="main">
+        <h2>Cadastro</h2>
+        <form class="form js-form">
+            <label for="name">
+                Nome:
+                <input class="form-field js-field" id="name" maxlength="120"
+                       name="name" required type="text" inputmode="text" autocomplete="name">
+            </label>
+            <span id="inline-wrapper">
+                <label for="birth-date">
+                    Data de Nascimento:
+                    <input class="form-field js-field" id="birth-date"
+                           name="birth-date" required type="date" inputmode="numeric" autocomplete="bday">
+                </label>
+                <button type="submit">Salvar</button>
+            </span>
+        </form>
+    </main>
+</div>
+<script src="javascript.js"></script>
+</body>
+</html>

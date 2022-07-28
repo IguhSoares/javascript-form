@@ -1,0 +1,122 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(113, 149, 53,0.2);
+}
+#content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-align-items: center;
+  min-height: 30em;
+}
+#main {
+  min-width: 50%;
+  font-family: Trebuchet MS;
+}
+:root {
+  --input-border: #422800;
+  --input-focus-h: 40;
+  --input-focus-s: 100%;
+  --input-focus-l: 42%;
+  --focus-background: rgb(38,32,0,0.8); /* #413601 */
+  --focus-color: #fbeee0;
+}
+
+#main h2 {
+  font-family: Gill Sans;
+  text-align: center;
+  padding: 15px;
+  color: #422800;
+}
+.form {
+  border: 1px solid var(--input-border);
+  color: #422800;
+  margin: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 70%;
+  min-width: 200px;
+}
+input {
+  line-height: 1;
+  height: 2.25em;
+  margin: 5px 0;
+  font-size: 16px;
+  font-size: max(16px, 1em);
+  font-family: inherit;
+  padding: 0.25em 0.5em;
+  background-color: #fff;
+  border: 2px solid var(--input-border);
+  border-radius: 4px;
+  transition: 180ms box-shadow ease-in-out;
+}
+input[disabled] {
+  --input-border: #ccc;
+  background-color: #eee;
+  cursor: not-allowed;
+}
+input:focus {
+  border-color: hsl(var(--input-focus-h), var(--input-focus-s), var(--input-focus-l));
+  box-shadow: 0 0 0 3px hsla(var(--input-focus-h), var(--input-focus-s), calc(var(--input-focus-l) + 40%), 0.8);
+  outline: 3px solid transparent; // Windows High Contrast mode
+}
+#name {
+  width: 87%;
+  min-width: 100%;
+}
+#birth-date {
+  margin-right: 5%;
+  width: 135px;
+  padding: 0.2em;
+}
+#inline-wrapper {
+  display: inline-block;
+}
+label:nth-child(2) {
+  width: 70%;
+}
+button {
+  font-family: inherit;
+  font-size: 16px;
+  font-size: max(16px, 1em);
+  cursor: pointer;
+  width: 75px;
+  height: 2.25em;
+  padding: 0.25em 0.3em;
+  min-width: 10ch;
+  min-height: 44px;
+  appearance: none;
+  background-color: #fbeee0;
+  border: 1px solid var(--input-border);
+  @media screen and (-ms-high-contrast: active) {
+  border: 2px solid var(--input-border);
+  }
+  border-radius: .375em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);;
+  box-sizing: border-box;
+  color: #422800;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1;
+  transition: 220ms all ease-in-out;
+}
+button:hover {
+  background-color: rgb(251,238,224,0.8);
+}
+button:focus {
+  background-color: var(--focus-background);
+  color: var(--focus-color);
+  outline-style: solid;
+  outline-color: transparent;
+  box-shadow: 0 0 0 4px scale-color(--focus-background, $lightness: -40%);
+}
