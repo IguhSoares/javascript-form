@@ -28,6 +28,7 @@ body {
   --input-focus-l: 42%;
   --focus-background: rgb(38,32,0,0.8); /* #413601 */
   --focus-color: #fbeee0;
+  --invalid-input-border: #FF4500;
 }
 
 #main h2 {
@@ -60,11 +61,9 @@ input {
   border-radius: 4px;
   transition: 180ms box-shadow ease-in-out;
 }
-input[disabled] {
-  --input-border: #ccc;
-  background-color: #eee;
-  cursor: not-allowed;
-}
+/* input:not(:placeholder-shown):not(:focus):invalid {
+  --input-border: #FF4500;
+} */
 input:focus {
   border-color: hsl(var(--input-focus-h), var(--input-focus-s), var(--input-focus-l));
   box-shadow: 0 0 0 3px hsla(var(--input-focus-h), var(--input-focus-s), calc(var(--input-focus-l) + 40%), 0.8);
@@ -76,8 +75,9 @@ input:focus {
 }
 #birth-date {
   margin-right: 5%;
-  width: 135px;
+  width: 137px;
   padding: 0.2em;
+  cursor: pointer
 }
 #inline-wrapper {
   display: inline-block;
