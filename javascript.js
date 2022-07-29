@@ -3,11 +3,39 @@ function getPersonData(nameInput, birthDateInput) {
 }
 
 function saveDataToStorage(dbName, newData) {
-  var peopleStorage = JSON.parse(window.localStorage.getItem(dbName)) || [];
-  if (!Array.isArray(peopleStorage)) { peopleStorage = [peopleStorage] }
-  peopleStorage.push(newData);
+  try {
+    var peopleStorage = JSON.parse(window.localStorage.getItem(dbName)) || [];
+    if (!Array.isArray(peopleStorage)) { peopleStorage = [peopleStorage] }
+    peopleStorage.push(newData);
 
-  localStorage.setItem(dbName, JSON.stringify(peopleStorage));
+    localStorage.setItem(dbName, JSON.stringify(peopleStorage));
+    return true;
+  } catch (error) {
+    return error.message;
+  }
+}
+
+
+function displaySuccessMessage(newName, messageArea) {
+  let newNameMsg = `"${newName}" cadastrado com sucesso!`
+
+  messageArea.prepend(newNameMsg).hide();
+  messageArea.addClass("success").removeClass("error");
+  messageArea.slideDown("slow", () => {
+    setTimeout(() => {
+      messageArea.slideUp("slow", () => messageArea.empty());
+    }, 2000)
+  });
+}
+
+function displayErrorMessage(errorMsg, messageArea) {
+  messageArea.prepend(`Erro: ${errorMsg}`).hide();
+  messageArea.addClass("error").removeClass("success");
+  messageArea.slideDown("slow", () => {
+    setTimeout(() => {
+      messageArea.slideUp("slow", () => messageArea.empty());
+    }, 2000)
+  });
 }
 
 
@@ -24,7 +52,7 @@ function validateNameInput(element) {
     } else if (/^[aA-zZ]{3,}\s*$/.test(name)) {
       msg = "Inserir o nome completo."
     } else if (/\s{2,}|(\s$)/.test(name)) {
-      msg = "Remover excesso de espaços entre os nomes ou "+
+      msg = "Remova excesso de espaços entre os nomes ou "+
         "espaço em branco ao final do nome."
     } else if (/\d+/g.test(name)) {
       msg = "Números não são permitidos."; }
@@ -80,9 +108,14 @@ window.addEventListener("load", () => {
 
       newPerson = getPersonData(nameInput.value, birthDateInput.value);
 
-      saveDataToStorage("Cadastro de Pessoas", newPerson);
-      document.querySelector("button").mouseout(() => {
-        document.querySelector("button").style.setProperty("background-color", "#fbeee0");
-      });
+      let dataSaved = saveDataToStorage("Cadastro de Pessoas", newPerson);
+      if (dataSaved === true) {
+        displaySuccessMessage(nameInput.value, $("#msg"));
+      } else {
+        displayErrorMessage(dataSaved, $("#msg"));
+      }
+
+      event.target.reset();
+      document.querySelector("button").blur();
   })
 });

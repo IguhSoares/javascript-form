@@ -120,3 +120,16 @@ button:focus {
   outline-color: transparent;
   box-shadow: 0 0 0 4px scale-color(--focus-background, $lightness: -40%);
 }
+p#msg {
+  display: none;
+  border: 1px dotted var(--input-border);
+  padding: 0.5em;
+  margin: 5px auto 0 auto;
+  border-radius: 6px;
+}
+.success {
+  background: rgb(144,238,144,0.7);
+}
+.error {
+  background: rgb(240,128,128,0.9);
+}
