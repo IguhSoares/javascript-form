@@ -3,6 +3,14 @@ function formatDate(match, year, month, day) {
 }
 
 
+function showTable(tableElement) {
+  if (tableElement.is(":hidden")) {
+    tableElement.fadeIn();
+    tableElement.removeClass("hidden");
+  }
+}
+
+
 function generateTableRow(tbodyElement, newEntry) {
   /*
     newEntry -> [id, {key: value, key: value}]
@@ -36,7 +44,7 @@ function generateTable(dbName, tbodyElement) {
       tbodyElement.prepend(generateTableRow(tbodyElement,[index, element]));
     }
 
-    tbodyElement.parent().fadeIn("slow");
+    showTable(tbodyElement.parent());
   }
 }
 
@@ -48,6 +56,7 @@ function updateTable(tbodyElement, newEntry) {
   var tr = generateTableRow(tbodyElement, newEntry);
   tr = tr.replace("<tr ", '<tr class="hidden"');
   tbodyElement.prepend(tr);
+  showTable(tbodyElement.parent());
   $("tr.hidden").fadeIn("slow");
   $("tr.hidden").removeClass("hidden");
 }
