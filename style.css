@@ -48,6 +48,9 @@ body {
   width: 70%;
   min-width: 200px;
 }
+.hidden {
+  display: none;
+}
 input {
   line-height: 1;
   height: 2.25em;
@@ -132,4 +135,18 @@ p#msg {
 }
 .error {
   background: rgb(240,128,128,0.9);
+}
+#dbData {
+  margin: auto;
+  margin-top: 2em;
+  border: 2px solid var(--input-border);
+  border-collapse: collapse;
+  text-align: center;
+}
+#dbData th {
+  background-color: #fbeee0;
+}
+.tableCell {
+  padding: 0.25em 0.5em;
+  border: 2px solid var(--input-border);
 }

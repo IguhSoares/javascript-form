@@ -1,3 +1,36 @@
+function formatDate(match, year, month, day) {
+  return [day, month, year].join("/");
+}
+
+
+function generateTable(dbName, tbodyElement) {
+  // Ler as entradas do localStorage
+  let dbEntries = JSON.parse(window.localStorage.getItem(dbName)) || [];
+  // Se não houver entradas, nao exibe tabela
+  if (dbEntries.length > 0) {
+    // Para cada item, gerar uma <tr> com os dados
+    var entries = dbEntries.entries();
+    for ([index, element] of entries) {
+      var tr = `<tr person_id="${index}">`;
+
+      for (key of Object.keys(element)) {
+        if (key === "BirthDate") {
+          let regex = /(\d{4})-(\d{2})-(\d{2})/;
+          element[key] = element[key].replace(regex, formatDate);
+        }
+
+        tr += `<td id="${key}_${index}" class="tableCell">${element[key]}</td>`;
+      }
+      tr += "</tr>";
+
+      tbodyElement.prepend(tr);
+    }
+
+    tbodyElement.parent().fadeIn("slow");
+  }
+}
+
+
 function getPersonData(nameInput, birthDateInput) {
   return {Nome: nameInput, BirthDate: birthDateInput}
 }
@@ -103,12 +136,15 @@ window.addEventListener("load", () => {
   var birthDateInput = document.querySelector("#birth-date");
   setInputValidation(birthDateInput);
 
+  var dbKey = "Cadastro de Pessoas";
+  generateTable(dbKey, $("#dbData tbody"));
+
   document.querySelector(".js-form").addEventListener("submit", (event) => {
       event.preventDefault();
 
       newPerson = getPersonData(nameInput.value, birthDateInput.value);
 
-      let dataSaved = saveDataToStorage("Cadastro de Pessoas", newPerson);
+      let dataSaved = saveDataToStorage(dbKey, newPerson);
       if (dataSaved === true) {
         displaySuccessMessage(nameInput.value, $("#msg"));
       } else {
