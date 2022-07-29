@@ -3,6 +3,28 @@ function formatDate(match, year, month, day) {
 }
 
 
+function generateTableRow(tbodyElement, newEntry) {
+  /*
+    newEntry -> [id, {key: value, key: value}]
+  */
+  let index = newEntry[0];
+  let newData = newEntry[1];
+  var tr = `<tr person_id="${index}">`;
+
+  for (key of Object.keys(newData)) {
+    if (key === "BirthDate") {
+      let regex = /(\d{4})-(\d{2})-(\d{2})/;
+      newData[key] = newData[key].replace(regex, formatDate);
+    }
+
+    tr += `<td id="${key}_${index}" class="tableCell">${newData[key]}</td>`;
+  }
+  tr += "</tr>";
+
+  return tr;
+}
+
+
 function generateTable(dbName, tbodyElement) {
   // Ler as entradas do localStorage
   let dbEntries = JSON.parse(window.localStorage.getItem(dbName)) || [];
@@ -11,25 +33,24 @@ function generateTable(dbName, tbodyElement) {
     // Para cada item, gerar uma <tr> com os dados
     var entries = dbEntries.entries();
     for ([index, element] of entries) {
-      var tr = `<tr person_id="${index}">`;
-
-      for (key of Object.keys(element)) {
-        if (key === "BirthDate") {
-          let regex = /(\d{4})-(\d{2})-(\d{2})/;
-          element[key] = element[key].replace(regex, formatDate);
-        }
-
-        tr += `<td id="${key}_${index}" class="tableCell">${element[key]}</td>`;
-      }
-      tr += "</tr>";
-
-      tbodyElement.prepend(tr);
+      tbodyElement.prepend(generateTableRow(tbodyElement,[index, element]));
     }
 
     tbodyElement.parent().fadeIn("slow");
   }
 }
 
+
+function updateTable(tbodyElement, newEntry) {
+  /*
+    newEntry -> [id, {key: value, key: value}]
+  */
+  var tr = generateTableRow(tbodyElement, newEntry);
+  tr = tr.replace("<tr ", '<tr class="hidden"');
+  tbodyElement.prepend(tr);
+  $("tr.hidden").fadeIn("slow");
+  $("tr.hidden").removeClass("hidden");
+}
 
 function getPersonData(nameInput, birthDateInput) {
   return {Nome: nameInput, BirthDate: birthDateInput}
@@ -42,7 +63,7 @@ function saveDataToStorage(dbName, newData) {
     peopleStorage.push(newData);
 
     localStorage.setItem(dbName, JSON.stringify(peopleStorage));
-    return true;
+    return peopleStorage.length; // Index of the newData in localStorage
   } catch (error) {
     return error.message;
   }
@@ -146,9 +167,13 @@ window.addEventListener("load", () => {
 
       newPerson = getPersonData(nameInput.value, birthDateInput.value);
 
-      let dataSaved = saveDataToStorage(dbKey, newPerson);
-      if (dataSaved === true) {
+      let newDataIndex = saveDataToStorage(dbKey, newPerson);
+      if (Number.isInteger(newDataIndex)) {
         displaySuccessMessage(nameInput.value, $("#msg"));
+
+        let newData = [newDataIndex, newPerson]
+        setTimeout(() => updateTable($("#dbData tbody"), newData), 3000);
+
       } else {
         displayErrorMessage(dataSaved, $("#msg"));
       }
