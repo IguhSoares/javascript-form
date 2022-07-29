@@ -53,7 +53,7 @@ function displaySuccessMessage(newName, messageArea) {
   let newNameMsg = `"${newName}" cadastrado com sucesso!`
 
   messageArea.prepend(newNameMsg).hide();
-  messageArea.addClass("success").removeClass("error");
+  messageArea.attr("class", "success");
   messageArea.slideDown("slow", () => {
     setTimeout(() => {
       messageArea.slideUp("slow", () => messageArea.empty());
@@ -63,7 +63,7 @@ function displaySuccessMessage(newName, messageArea) {
 
 function displayErrorMessage(errorMsg, messageArea) {
   messageArea.prepend(`Erro: ${errorMsg}`).hide();
-  messageArea.addClass("error").removeClass("success");
+  messageArea.attr("class", "error");
   messageArea.slideDown("slow", () => {
     setTimeout(() => {
       messageArea.slideUp("slow", () => messageArea.empty());
@@ -125,16 +125,18 @@ function validateInput(element) {
   }
 }
 
-var setInputValidation = (inputElement) => {
+
+function InputValidation(inputElement) {
   inputElement.addEventListener("input", () => { validateInput(inputElement); });
 }
 
+
 window.addEventListener("load", () => {
   var nameInput = document.querySelector("#name");
-  setInputValidation(nameInput);
+  InputValidation(nameInput);
 
   var birthDateInput = document.querySelector("#birth-date");
-  setInputValidation(birthDateInput);
+  InputValidation(birthDateInput);
 
   var dbKey = "Cadastro de Pessoas";
   generateTable(dbKey, $("#dbData tbody"));
