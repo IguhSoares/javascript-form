@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./cxDialog/dist/css/cxdialog.min.css" />
+	  <script src="./cxDialog/dist/js/cxdialog.min.js"></script>
     <script
       src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
     </script>
@@ -34,18 +36,19 @@
             </span>
             <p id="msg"></p>
         </form>
+        <div id="table-wrapper">
+          <table id="dbData" class="js-table hidden">
+            <thead>
+              <tr>
+                <th class="tableCell">Nome</th>
+                <th class="tableCell">Data de Nascimento</th>
+              </tr>
+            </thead>
+            <tbody>
 
-        <table id="dbData" class="js-table hidden">
-          <thead>
-            <tr>
-              <th class="tableCell">Nome</th>
-              <th class="tableCell">Data de Nascimento</th>
-            </tr>
-          </thead>
-          <tbody>
-
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </main>
 </div>
 <script src="javascript.js"></script>

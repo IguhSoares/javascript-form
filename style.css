@@ -136,10 +136,12 @@ p#msg {
 .error {
   background: rgb(240,128,128,0.9);
 }
+#table-wrapper {
+  padding-left:50px;
+}
 #dbData {
   margin: auto;
   margin-top: 2em;
-  border: 2px solid var(--input-border);
   border-collapse: collapse;
   text-align: center;
 }
@@ -150,9 +152,34 @@ p#msg {
   padding: 0.25em 0.5em;
   border: 2px solid var(--input-border);
 }
+.iconCell {
+  border: none;
+  width: 20px;
+  padding: 0;
+}
+.iconHeader {
+  background-color: rgb(113, 149, 53,0.2);
+  border-top: 0;
+  border-right: 0;
+}
 .clickable {
   cursor: pointer;
 }
-.clickable:hover {
-  text-decoration: underline;
+.iconWrapper, .saveChangesIcon {
+  padding: 2px;
+  border-radius: 50%;
+  width: 17px;
+  margin: auto;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.iconWrapper:hover, .saveChangesIcon:hover {
+  border: 1px solid rgba(66, 40, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  margin: auto;
+  width: 13px;
 }

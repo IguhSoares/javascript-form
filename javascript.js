@@ -1,3 +1,49 @@
+function setToggleIconsEvent(element) {
+  element.hover((event) => {
+    let td = event.target;
+    let id = td.getAttribute("id").match(/_(\d+)$/)[1];
+    $(`img[id*="_icon_"]:visible`).hide();
+
+    $(`#edit_icon_${id}`).show();
+    $(`#edit_icon_${id}`).parent().css("display", "flex");
+
+    $(`#remove_icon_${id}`).show();
+    $(`#remove_icon_${id}`).parent().css("display", "flex");
+
+    $(`tr[person_id="${id}"]`).hover(
+      () => {},
+      (event) => {
+        $("span.iconWrapper:visible").hide();
+        $(`img[id*="_icon_"]:visible`).hide();
+      }
+    );
+  }, (event) => {
+    let td = event.target;
+    let id = td.getAttribute("id").match(/_(\d+)$/)[1];
+
+    let imgIcon = $(`img[id*="_icon_"]:visible`);
+    let imgId = imgIcon.attr("id").match(/_(\d+)$/)[1];
+    if (imgId != id) {
+      imgIcon.hide();
+    }
+  });
+}
+
+
+function initCancelSubmit(cancelButton, rowBackup, dataIndex) {
+  cancelButton.on('click', (event) => {
+    let row = $(`tr[person_id="${dataIndex}"]`);
+    row.fadeOut();
+    setTimeout(() => {
+      row.html(rowBackup);
+      row.fadeIn();
+      setToggleIconsEvent($(`td[id$="${dataIndex}"].personData`));
+    }, 500);
+
+  });
+}
+
+
 function initSubmitEdit(button, dbName, dataIndex) {
   button.on('click', (event) => {
     // pegar valor dos inputs
@@ -11,11 +57,24 @@ function initSubmitEdit(button, dbName, dataIndex) {
       // fazer o update
       updateDataFromStorage(dbName, dataIndex, newData);
 
-      button.parent().parent().hide();
+      let currentRow = button.parent().parent().parent();
+      if (currentRow.parent().children().length === 1) {
+        $("thead").css("display", "block");
+      }
+      currentRow.hide();
+      button.parent().hide();
       let successMessage = `${nameInput} editado com sucesso!`;
       displaySuccessMessage(successMessage, $("#msg"));
 
-      setTimeout(() => updateTable($("#dbData tbody"), [dataIndex, newData], dataIndex), 3000);
+      setTimeout(
+        () => {
+          $("thead").css("display","");
+          updateTable($("#dbData tbody") , [dataIndex, newData], dataIndex);
+
+          setToggleIconsEvent($(`td[id$="${dataIndex}"].personData`));
+        },
+        3000
+      );
     }
   });
 }
@@ -42,7 +101,8 @@ function createEditForm(fieldData) {
                 pattern="^(0[1-9]|1[0-9]|2[0-9]|3[01])\/(0[1-9]|1[012])\/[0-9]{4}$"
                 autocomplete="bday" value="${newDate}" /></td>`;
   } else if (id.match(/edit/)) {
-    editForm += `<td class="tableCell"><button id="submit_${id}" type="submit">Salvar</button></td>`;
+    editForm += `<td class="tableCell iconCell"><span class="saveChangesIcon"><img class="icon clickable" title="Salvar" alt="Salvar" src="imgs/confirm_icon.png" id="submit_${id}" type="submit" /></span></td>`;
+    editForm += `<td class="tableCell iconCell"><span class="saveChangesIcon"><img class="icon clickable" title="Cancelar" alt="Cancelar" src="imgs/cancel_icon.png" id="cancel_submit_${id}" type="submit" /></span></td>`;
   }
 
   return editForm;
@@ -80,9 +140,11 @@ function generateTableRow(tbodyElement, newEntry) {
       newData[key] = newData[key].replace(regex, formatDate);
     }
 
-    tr += `<td id="${key}_${index}" class="tableCell">${newData[key]}</td>`;
+    tr += `<td id="${key}_${index}" class="tableCell personData">${newData[key]}</td>`;
   }
-  tr += `<td id="edit_${index}" class="tableCell clickable">edit</td>"`;
+  tr += `<td id="edit_${index}" class="tableCell iconCell"><span class="iconWrapper"><img id="edit_icon_${index}" type="edit" title="Editar" alt="Editar" class="icon clickable hidden" src="imgs/edit_icon.png"/></span></td>"`;
+  tr += `<td id="remove_${index}" class="tableCell iconCell"><span class="iconWrapper"><img id="remove_icon_${index}" type="remove" title="Remover" alt="Remover" class="icon clickable hidden" src="imgs/remove_icon.png"/></span></td>"`;
+
   tr += "</tr>";
 
   return tr;
@@ -121,12 +183,13 @@ function updateTable(tbodyElement, newEntry, row=null) {
   $("tr.hidden").removeClass("hidden");
 }
 
+
 function createPersonData(nameInput, birthDateInput) {
   let formatDate = birthDateInput.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if (formatDate) {
     birthDateInput = `${formatDate[3]}-${formatDate[2]}-${formatDate[1]}`;
   }
-  
+
   if (nameInput.length === 0 ) {
     msg = "Campo requerido. Favor inserir o nome completo.";
   } else if (nameInput.length < 3) {
@@ -179,10 +242,18 @@ function saveDataToStorage(dbName, newData) {
     peopleStorage.push(newData);
 
     localStorage.setItem(dbName, JSON.stringify(peopleStorage));
-    return peopleStorage.length; // Index of the newData in localStorage
+    return peopleStorage.length-1; // Index of the newData in localStorage
   } catch (error) {
     return error.message;
   }
+}
+
+function removeDataFromStorage(dbName, index) {
+  console.log(index);
+  var dataBase = readDb(dbName);
+  dataBase.splice(index, 1);
+
+  localStorage.setItem(dbName, JSON.stringify(dataBase));
 }
 
 
@@ -292,7 +363,13 @@ window.addEventListener("load", () => {
         displaySuccessMessage(successMessage, $("#msg"));
 
         let newData = [newDataIndex, newPerson]
-        setTimeout(() => updateTable($("#dbData tbody"), newData), 3000);
+        setTimeout(
+          () => {
+            updateTable($("#dbData tbody"), newData)
+            setToggleIconsEvent($(`td.personData`));
+          },
+          3000
+        );
 
       } else {
         displayErrorMessage(dataSaved, $("#msg"));
@@ -303,20 +380,49 @@ window.addEventListener("load", () => {
   })
 
   document.querySelector("#dbData tbody").addEventListener("click", (event) => {
-    let td = event.target;
-    if (td && td.nodeName == "TD") {
-      let index = td.getAttribute("id").match(/edit_(\d+)/)[1];
+    let icon = event.target;
+    if (icon && $(icon).hasClass("icon") && $(icon).attr("type") === "edit") {
+      let index = icon.getAttribute("id").match(/edit_icon_(\d+)/)[1];
 
       var editForm = "";
       for (data of $(`tr[person_id="${index}"]`).children()) {
         editForm += createEditForm(data);
       }
+      var rowBackup = $(`tr[person_id="${index}"]`).html();
       $(`tr[person_id="${index}"]`).html(editForm);
+      $("span.saveChangesIcon").css("display", "flex");
       InputValidation($("#dbData tbody")[0]);
-      // InputValidation($(`input#name_${index}`)[0]);
-      // InputValidation($(`input#birthdate_${index}`)[0]);
 
-      initSubmitEdit($("button[id^='submit_edit_']"), dbKey, index);
+      initSubmitEdit($("img[id^='submit_edit_']"), dbKey, index);
+      initCancelSubmit($("img[id^='cancel_submit_edit_']"), rowBackup, index);
+    } else if ($(icon).hasClass("icon") && $(icon).attr("type") === "remove") {
+      let index = icon.getAttribute("id").match(/remove_icon_(\d+)/)[1];
+
+      let personName = $(`#Name_${index}`).text();
+      cxDialog({
+        title: 'Confirmar remoção',
+        info: `Tem certeza que deseja remover "${personName}" da base de dados?`,
+        okText: "Sim, quero remover",
+        noText: "Cancelar",
+        ok: () => {
+          removeDataFromStorage(dbKey, index);
+
+          displaySuccessMessage(`${personName} removido da base de dados.`, $("#msg"));
+          setTimeout(
+            () => {
+              $("#dbData").hide();
+              $("#dbData tbody").html("");
+              generateTable(dbKey, $("#dbData tbody"));
+              setToggleIconsEvent($(`td.personData`));
+            },
+            3000);
+        },
+        no: () => {
+
+        }
+      });
     }
   });
+
+  setToggleIconsEvent($(`td.personData`));
 });
